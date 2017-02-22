@@ -23,9 +23,6 @@ static NSString * const kLXDkvoAssiociateObserver = @"LXDAssiociateObserver";
 @end
 
 
-
-
-
 @implementation LXD_ObserverInfo
 
 - (instancetype)initWithObserver: (NSObject *)observer forKey: (NSString *)key observeHandler: (LXD_ObservingHandler)handler
@@ -147,12 +144,16 @@ static Class kvo_Class(id self)
     //如果被监听者没有LXDObserver_，那么判断是否需要创建新类
     if (![className hasPrefix: kLXDkvoClassPrefix]) {
         observedClass = [self createKVOClassWithOriginalClassName: className];
+        
+        //将self 转换成observedClass类型，返回原来的类型
         object_setClass(self, observedClass);
+        
+        //self 是一个监听对象了
     }
-    
     
     //add kvo setter method if its class(or superclass)hasn't implement setter
     if (![self hasSelector: setterSelector]) {
+        //在类中添加方法和实现
         const char * types = method_getTypeEncoding(setterMethod);
         class_addMethod(observedClass, setterSelector, (IMP)KVO_setter, types);
     }
@@ -166,6 +167,7 @@ static Class kvo_Class(id self)
         observers = [NSMutableArray array];
         objc_setAssociatedObject(self, (__bridge void *)kLXDkvoAssiociateObserver, observers, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     }
+    
     [observers addObject: newInfo];
 }
 
@@ -174,16 +176,16 @@ static Class kvo_Class(id self)
 {
     NSMutableArray * observers = objc_getAssociatedObject(self, (__bridge void *)kLXDkvoAssiociateObserver);
     
-    LXD_ObserverInfo * observerRemoved = nil;
+    
+    NSMutableArray *observerList = [NSMutableArray arrayWithCapacity:0];
     for (LXD_ObserverInfo * observerInfo in observers) {
         
         if (observerInfo.observer == object && [observerInfo.key isEqualToString: key]) {
             
-            observerRemoved = observerInfo;
-            break;
+            [observerList addObject:observerInfo];
         }
     }
-    [observers removeObject: observerRemoved];
+    [observers removeObjectsInArray:observerList];
 }
 
 

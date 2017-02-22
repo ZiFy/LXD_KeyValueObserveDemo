@@ -22,10 +22,19 @@
     LXD_ObservedObject * object = [LXD_ObservedObject new];
     [object LXD_addObserver: self forKey: @"observedNum" withBlock: ^(id observedObject, NSString *observedKey, id oldValue, id newValue) {
         
-        NSLog(@"Value had changed yet");
+        NSLog(@"Value had changed yet  1111 %@ %@",oldValue,newValue);
+    }];
+    
+    [object LXD_addObserver: self forKey: @"observedNum" withBlock: ^(id observedObject, NSString *observedKey, id oldValue, id newValue) {
+        
+        NSLog(@"Value had changed yet  2222 %@ %@",oldValue,newValue);
     }];
     
     object.observedNum = @10;
+    
+    [object LXD_removeObserver:self forKey:@"observedNum"];
+    
+    object.observedNum = @11;
 }
 
 - (void)didReceiveMemoryWarning {

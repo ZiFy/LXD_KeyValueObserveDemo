@@ -30,17 +30,18 @@ typedef void (^LXD_ObservingHandler) (id observedObject, NSString * observedKey,
 
 /**
  *  method stead of traditional addObserver API
- *
+ *  可以调用多次，每次调用都会保存在观察者列表，即使出现相同的入参情况
  *  @param object          object as observer
  *  @param key             attribute of object to be observed
  *  @param observedHandler method to be invoked when notification be observed has changed
+ *
  */
 - (void)LXD_addObserver: (NSObject *)object forKey: (NSString *)key withBlock: (LXD_ObservingHandler)observedHandler;
 
 
 /**
  *  remove the observe
- *
+ *  会移除observe，key下面的所有事件。
  *  @param object object as observer
  *  @param key    attribute observed will remove the observe
  */
